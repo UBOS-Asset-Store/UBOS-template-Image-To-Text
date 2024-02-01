@@ -1,0 +1,204 @@
+[
+    {
+        "id": "c9962a6f346ff0d8",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "cfaae26a5b701cef",
+        "type": "debug",
+        "z": "c9962a6f346ff0d8",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 140,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "107c0afcaad482da",
+        "type": "http response",
+        "z": "c9962a6f346ff0d8",
+        "name": "result",
+        "statusCode": "",
+        "headers": {},
+        "x": 770,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "30e5d1fcd68f080e",
+        "type": "http in",
+        "z": "c9962a6f346ff0d8",
+        "name": "",
+        "url": "/css",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 80,
+        "wires": [
+            [
+                "726cb4f6ad6ac6fd"
+            ]
+        ]
+    },
+    {
+        "id": "726cb4f6ad6ac6fd",
+        "type": "template",
+        "z": "c9962a6f346ff0d8",
+        "name": "css",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "css",
+        "syntax": "mustache",
+        "template": ".bodyContainer {\n    max-height: 98vh !important;\n    padding: 0 !important;\n    top: 50vh !important;\n    left: 50vw !important;\n    transform: translate(-50%, -50%);\n}\n\n.logoText span {\n    font-size: 26px !important;\n    text-align: center !important;\n}\n\n.buttonLaunch span {\n    color: white !important;\n}\n\n.filePicker button {\n    background-color: transparent !important;\n    border: 1px solid #06cfbe !important;\n    border-radius: 5px !important;\n}\n\n.filePicker button span {\n    color: #06cfbe !important;\n}\n\n.filePicker button:hover {\n    color: #fff !important;\n    background: #06cfbe !important;\n}\n\n.filePicker button:active {\n    background: #fff !important;\n}\n\n.filePicker>div>div>div>div:hover button{\n    color: #fff !important;\n    background: #06cfbe !important;\n}\n\n.filePicker>div>div>div>div:hover button span{\n    color: #fff !important;\n}\n\n.filePicker>div>div>div>div:active button {\n    color: #fff !important;\n    background: #06cfbe !important;\n}\n",
+        "output": "str",
+        "x": 270,
+        "y": 80,
+        "wires": [
+            [
+                "77fce1906ee6548b"
+            ]
+        ]
+    },
+    {
+        "id": "77fce1906ee6548b",
+        "type": "http response",
+        "z": "c9962a6f346ff0d8",
+        "name": "",
+        "statusCode": "",
+        "headers": {
+            "content-type": "text/css"
+        },
+        "x": 410,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "c3e0216c25769b40",
+        "type": "function",
+        "z": "c9962a6f346ff0d8",
+        "name": "to GPT",
+        "func": "msg.model = 'gpt-4-vision-preview';\nmsg.headers = {\n    \"Authorization\": `Bearer ${msg.payload.openAIKey}`,\n    \"Content-Type\": \"application/json\"\n};\n\nmsg.payload = {\n    \"model\": \"gpt-4-vision-preview\",\n   messages:[\n        {\n            \"role\": \"user\",\n            \"content\": [\n                {\n                    \"type\": \"text\",\n                    \"text\": `What’s in this image? ${msg.payload.prompt}`\n                },\n                {\n                    \"type\": \"image_url\",\n                    \"image_url\": {\n                        \"url\": msg.payload?.imgURL,\n                    },\n                },\n            ],\n        }\n    ],\n    \"max_tokens\": msg.payload.maxTokens\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 160,
+        "wires": [
+            [
+                "32d801beda96497c",
+                "63f353abce8b044d"
+            ]
+        ]
+    },
+    {
+        "id": "547ed6f5ae253d68",
+        "type": "function",
+        "z": "c9962a6f346ff0d8",
+        "name": "result",
+        "func": "// global.set(\"outputText\", msg.payload.choices[0].message.content);\n\nif (msg.statusCode == 200) {\n    msg.payload = msg.payload.choices[0].message.content;\n} else {\n    msg.payload = 'Oooops something went wrong 😔';\n}\n\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 160,
+        "wires": [
+            [
+                "107c0afcaad482da",
+                "8da4df316685c916"
+            ]
+        ]
+    },
+    {
+        "id": "8da4df316685c916",
+        "type": "debug",
+        "z": "c9962a6f346ff0d8",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "32d801beda96497c",
+        "type": "debug",
+        "z": "c9962a6f346ff0d8",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 360,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "63f353abce8b044d",
+        "type": "http request",
+        "z": "c9962a6f346ff0d8",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 470,
+        "y": 160,
+        "wires": [
+            [
+                "8da4df316685c916",
+                "547ed6f5ae253d68"
+            ]
+        ]
+    },
+    {
+        "id": "023db0dd23de8868",
+        "type": "http in",
+        "z": "c9962a6f346ff0d8",
+        "name": "",
+        "url": "/launch",
+        "method": "post",
+        "upload": true,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "c3e0216c25769b40",
+                "cfaae26a5b701cef"
+            ]
+        ]
+    }
+]
